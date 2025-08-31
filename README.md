@@ -1,4 +1,4 @@
-# Face Recognition Attendance System (PyQt5 + OpenCV + MySQL)
+# FaceTrack AI (PyQt5 + OpenCV + MySQL)
 
 A desktop application with two portals:
 - **Student Portal**: Enroll new students via face capture and mark attendance (auto Login/Logout).
