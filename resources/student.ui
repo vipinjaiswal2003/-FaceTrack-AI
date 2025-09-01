@@ -6,24 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>424</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Student Portal</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+
+   <!-- 📷 Video feed area -->
    <item>
     <widget class="QLabel" name="videoLabel">
      <property name="minimumSize">
       <size>
-       <width>640</width>
-       <height>480</height>
+       <width>320</width>
+       <height>240</height>
       </size>
      </property>
      <property name="text">
-      <string>Camera Preview</string>
+      <string>[ Camera Feed ]</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -33,58 +35,73 @@
      </property>
     </widget>
    </item>
+
+   <!-- Existing Enroll Student group -->
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_name">
-       <property name="text">
-        <string>Name:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="nameInput"/>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_roll">
-       <property name="text">
-        <string>Roll No:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="rollInput"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_dept">
-       <property name="text">
-        <string>Department:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="deptInput"/>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Enroll Student</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_name">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="nameInput"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_roll">
+        <property name="text">
+         <string>Roll No</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="rollInput"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_dept">
+        <property name="text">
+         <string>Department</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="deptInput"/>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QPushButton" name="enrollButton">
+        <property name="text">
+         <string>Capture &amp; Enroll</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
+
+   <!-- Existing Mark Attendance group -->
    <item>
-    <layout class="QHBoxLayout" name="buttonLayout">
-     <item>
-      <widget class="QPushButton" name="enrollButton">
-       <property name="text">
-        <string>Enroll</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="attendanceButton">
-       <property name="text">
-        <string>Mark Attendance</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="groupBox2">
+     <property name="title">
+      <string>Mark Attendance</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QPushButton" name="attendanceButton">
+        <property name="text">
+         <string>Capture &amp; Mark Login/Logout</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
    </item>
+
   </layout>
  </widget>
  <resources/>
