@@ -2,45 +2,69 @@ import cv2
 import numpy as np
 from PyQt5.QtWidgets import QDialog, QMessageBox
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from database import get_connection
 from models import encode_face, compare_faces
+
 
 class StudentWindow(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         loadUi("resources/student.ui", self)
+
+        # Camera setup
+        self.cap = None
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_frame)
+
+        # Start the camera feed immediately
+        self.start_camera()
+
+        # Button actions
         self.enrollButton.clicked.connect(self.enroll_student)
         self.attendanceButton.clicked.connect(self.mark_attendance)
 
-        # Camera setup
+    # ---------------- Camera Methods ----------------
+    def start_camera(self):
         self.cap = cv2.VideoCapture(0)
         if not self.cap.isOpened():
             QMessageBox.critical(self, "Camera Error", "Could not access camera.")
             return
+        self.timer.start(30)  # update every 30 ms (~30 FPS)
 
-        # Timer for live video
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(30)  # ~30 fps
-
-        self.current_frame = None  # Store latest frame
+    def stop_camera(self):
+        if self.cap:
+            self.cap.release()
+            self.cap = None
+        self.timer.stop()
 
     def update_frame(self):
-        ret, frame = self.cap.read()
-        if ret:
-            self.current_frame = frame
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            h, w, ch = rgb.shape
-            qimg = QImage(rgb.data, w, h, ch * w, QImage.Format_RGB888)
-            self.videoLabel.setPixmap(QPixmap.fromImage(qimg).scaled(
-                self.videoLabel.width(), self.videoLabel.height(), Qt.KeepAspectRatio
-            ))
+        if not self.cap:
+            return
+        ok, frame = self.cap.read()
+        if not ok:
+            return
+        # Convert frame for display
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb.shape
+        bytes_per_line = ch * w
+        qt_img = QImage(rgb.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        self.videoLabel.setPixmap(QPixmap.fromImage(qt_img))
 
     def _capture_frame(self):
-        return self.current_frame  # Use latest frame from live feed
+        """Capture one frame for recognition/enrollment"""
+        if not self.cap:
+            self.start_camera()
+        ok, frame = self.cap.read()
+        return frame if ok else None
 
+    def closeEvent(self, event):
+        """Stop camera when window closes"""
+        self.stop_camera()
+        event.accept()
+
+    # ---------------- Enroll Student ----------------
     def enroll_student(self):
         name = self.nameInput.text().strip()
         roll = self.rollInput.text().strip()
@@ -51,7 +75,7 @@ class StudentWindow(QDialog):
 
         frame = self._capture_frame()
         if frame is None:
-            QMessageBox.critical(self, "Camera Error", "No frame available.")
+            QMessageBox.critical(self, "Camera Error", "Could not capture image.")
             return
 
         encoding = encode_face(frame)
@@ -76,10 +100,11 @@ class StudentWindow(QDialog):
         finally:
             cur.close(); conn.close()
 
+    # ---------------- Mark Attendance ----------------
     def mark_attendance(self):
         frame = self._capture_frame()
         if frame is None:
-            QMessageBox.critical(self, "Camera Error", "No frame available.")
+            QMessageBox.critical(self, "Camera Error", "Could not capture image.")
             return
 
         enc = encode_face(frame)
@@ -104,6 +129,7 @@ class StudentWindow(QDialog):
                 return
 
             user_id = ids[idx]
+            # Toggle Login/Logout
             cur.execute(
                 "SELECT status FROM attendance WHERE user_id=%s AND DATE(timestamp)=CURDATE() "
                 "ORDER BY timestamp DESC LIMIT 1",
@@ -119,8 +145,3 @@ class StudentWindow(QDialog):
             QMessageBox.critical(self, "DB Error", f"Failed to mark attendance: {e}")
         finally:
             cur.close(); conn.close()
-
-    def closeEvent(self, event):
-        if self.cap.isOpened():
-            self.cap.release()
-        event.accept()
