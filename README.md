@@ -17,6 +17,8 @@ A desktop application with two portals:
 > - `pip install cmake`
 > - Then either use `pip install dlib-bin` (Windows prebuilt) OR install via Conda (`conda install -c conda-forge dlib`).
 > - Then `pip install face-recognition`.
+> - If you face issues installing dlib when installing face-recognition:
+> - Download the precompiled dlib wheel for Python 3.10 (64-bit):dlib-19.22.99-cp310-cp310-win_amd64.whl
 
 ### Steps
 ```bash
